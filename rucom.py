@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-### rucom.py: ryu365 Teams Administration Command
+# rucom.py: ryu365 Teams Administration Command
 '''rucom.py: ryu365 Teams Administration Command
 
 Usage:
@@ -51,89 +51,94 @@ from docopt import docopt
 import ryu365 as ru
 from pprint import *
 
-### extAttributeリストと課程リストから検索用Pairリストを作成
+# extAttributeリストと課程リストから検索用Pairリストを作成
+
+
 def getAttributePairs(attributeList, courseList):
-  pairList = []
-  for course in courseList:
-    pairList.append((ru.extAttribute, attributeList[course]))
-  return pairList
+    pairList = []
+    for course in courseList:
+        pairList.append((ru.extAttribute, attributeList[course]))
+    return pairList
+
 
 if __name__ == '__main__':
     import o365Graph as og
 
     args = docopt(__doc__)
-    #print(args)
+    # print(args)
 
     # Get AccessToken
     token = og.getAzureAccessToken(ru.TenantId, ru.ClientId, ru.ClientSecret)
 
-    ### createTeam
+    # createTeam
     if args['createTeam']:
-      print('*** createTeams')
-      pprint(og.createTeam(token, args['-u'], args['-n'], args['-m'], args['-d'], args['-c']))
+        print('*** createTeams')
+        pprint(og.createTeam(
+            token, args['-u'], args['-n'], args['-m'], args['-d'], args['-c']))
 
-    ### getUser
+    # getUser
     elif args['getUser']:
-      if args['-u']:
-        print('*** getUser -u')
-        pprint(og.getUniqUser(token, args['-u']))
+        if args['-u']:
+            print('*** getUser -u')
+            pprint(og.getUniqUser(token, args['-u']))
 
-    ### getUserList
+    # getUserList
     elif args['getUserList']:
-      pairs = []
+        pairs = []
 
-      if args['-s'] and args['-k']:
-        searchOr = False
-        pairs.append((args['-k'], args['-s']))
-        # 課程 only for 先端理工学部
-        if args['--course'] and args['--studentY']:
-          course = [ru.Course[f"{args['--course']}"].value]
-          pairs += getAttributePairs(ru.studentY, course)
+        if args['-s'] and args['-k']:
+            searchOr = False
+            pairs.append((args['-k'], args['-s']))
+            # 課程 only for 先端理工学部
+            if args['--course'] and args['--studentY']:
+                course = [ru.Course[f"{args['--course']}"].value]
+                pairs += getAttributePairs(ru.studentY, course)
 
-      else:
-        searchOr = True
-        course = [0, 1, 2, 3, 4, 5]
-        # 課程 Enum 参照
-        if args['--course']:
-          searchOr = False
-          course = [ru.Course[f"{args['--course']}"].value]
+        else:
+            searchOr = True
+            course = [0, 1, 2, 3, 4, 5]
+            # 課程 Enum 参照
+            if args['--course']:
+                searchOr = False
+                course = [ru.Course[f"{args['--course']}"].value]
 
-        if args['--studentY']:
-          pairs += getAttributePairs(ru.studentY, course)
-        elif args['--studentT']:
-          pairs += getAttributePairs(ru.studentT, course)
-        elif args['--gradT']:
-          pairs += getAttributePairs(ru.gradT, course)
-        elif args['--teacher']:
-          pairs += getAttributePairs(ru.teacher, course)
+            if args['--studentY']:
+                pairs += getAttributePairs(ru.studentY, course)
+            elif args['--studentT']:
+                pairs += getAttributePairs(ru.studentT, course)
+            elif args['--gradT']:
+                pairs += getAttributePairs(ru.gradT, course)
+            elif args['--teacher']:
+                pairs += getAttributePairs(ru.teacher, course)
 
-      pprint(og.getUserList(token, pairs, searchOr))
-      print(pairs)
+        pprint(og.getUserList(token, pairs, searchOr))
 
-    ### getTeam
+    # getTeam
     elif args['getTeam']:
-      pairs = []
-      if args['-s'] and args['-k']:
-        pairs.append((args['-k'], args['-s']))
-        pprint(og.getTeam(token, pairs=pairs))
-      elif args['-t']:
-        pprint(og.getTeam(token, id=args['-t']))
+        pairs = []
+        if args['-s'] and args['-k']:
+            pairs.append((args['-k'], args['-s']))
+            pprint(og.getTeam(token, pairs=pairs))
+        elif args['-t']:
+            pprint(og.getTeam(token, id=args['-t']))
 
-    ### getChannel
+    # getChannel
     elif args['getChannel']:
-      pprint(og.getChannel(token, args['-t']))
+        pprint(og.getChannel(token, args['-t']))
 
-    ### addTeamMemberList
+    # addTeamMemberList
     elif args['addTeamMemberList']:
-      if args['--stdin']:
-        print(og.addTeamMemberList(token, args['-t'], std=True))  
-      else:
-        print(og.addTeamMemberList(token, args['-t'], std=False, filename=args['-f']))  
+        if args['--stdin']:
+            print(og.addTeamMemberList(token, args['-t'], std=True))
+        else:
+            print(og.addTeamMemberList(
+                token, args['-t'], std=False, filename=args['-f']))
 
-    ### addChannelMemberList
+    # addChannelMemberList
     elif args['addChannelMemberList']:
-      if args['--stdin']:
-        print(og.addTeamMemberList(token, args['-t'], args['-c'], std=True))  
-      else:
-        print(og.addTeamMemberList(token, args['-t'], args['-c'], std=False, filename=args['-f']))  
-
+        if args['--stdin']:
+            print(og.addTeamMemberList(
+                token, args['-t'], args['-c'], std=True))
+        else:
+            print(og.addTeamMemberList(
+                token, args['-t'], args['-c'], std=False, filename=args['-f']))
