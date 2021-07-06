@@ -2,6 +2,7 @@
 ### rucom.py: ryu365 Teams Administration Command
 
 ```
+$ ./rucom.py
 Usage:
   rucom.py getUser (-u <user>)
   rucom.py getUserList (-k <key> -s <string>) [(--studentY --course <course>)]
